@@ -1,8 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const morgan = require('morgan');
 const data = require('./data');
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+//logger middleware
+app.use(morgan('dev'))
 
 
 //Routes
@@ -73,7 +77,7 @@ app.post('/schedules' ,(req,res) => {
 app.post('/users', (req, res)=> {
     const password = req.body.password
     const salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(password, salt);
+    const hash = bcrypt.hashSync(password, salt);
     // TODO: Add hash to user object and then push to user array
     res.send(hash)
 })
@@ -109,3 +113,13 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 app.post('/users', (req, res) => {
 res.send(req.body)
 })
+
+
+
+//Post one particular user
+app.get('/users/:id/posts', (req,res) =>{
+  const posts = data.schedules.filter(post => post.user_id === Number(req.params.id))  
+  //TODO:  Validate- if array has data , then send it. Otherwise show error
+  res.send(posts)
+}
+)

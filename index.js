@@ -11,15 +11,19 @@ app.use(morgan('dev'))
 
 //Routes
 
-//Welcome
+//Welcome-
 app.get('/', (req, res) => {
-    res.send("Welcome to our schedule website")
+    res.render("pages/home")
 }) 
 
 //Get all Users
 app.get('/users' , (req, res)=> {
    
-    res.send(data.users)
+    //res.send(data.users)
+
+    res.render('pages/users', {
+        users:data.users
+    })
 })
 
 //Get all schedules
@@ -29,6 +33,11 @@ app.get('/schedules' , (req, res) => {
 })
 
 
+
+
+app.get('/users/add', (req, res) => {
+    res.render('pages/new-user')
+})
 
 //Get individual user
 
@@ -62,12 +71,19 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 
 //Create New Post
 
-app.post('/schedules' ,(req,res) => {
+app.post('/posts' ,(req,res) => {
 //TODO:Validate data
+
+
     //Add post to all  posts
     data.schedules.push(req.body)
     res.send(req.body)
 })
+
+
+
+
+
 
 
 
@@ -79,7 +95,14 @@ app.post('/users', (req, res)=> {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
     // TODO: Add hash to user object and then push to user array
-    res.send(hash)
+
+    data.users.push({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.email,
+        password:hash
+    })
+    res.redirect('/users')
 })
 //CRUD -        Create,    Read,Update,   Delete
 //  HTTP METHODS      post,    get,   put/patch,   delete
@@ -87,10 +110,13 @@ app.post('/users', (req, res)=> {
 
 
 
+//Set view engines
+
+app.set('view engine', 'ejs')
 
 
-
-
+//Set static folder
+app.use(express.static('public'))
 
 
 app.listen(PORT, () => {
@@ -119,7 +145,18 @@ res.send(req.body)
 //Post one particular user
 app.get('/users/:id/posts', (req,res) =>{
   const posts = data.schedules.filter(post => post.user_id === Number(req.params.id))  
-  //TODO:  Validate- if array has data , then send it. Otherwise show error
+  //TODO:   Validate- if array has data , then send it. Otherwise show error
   res.send(posts)
+}
+)
+
+
+//Add new post
+
+app.post('/posts', (req, res) => {
+
+
+    data.posts.push(req.body)
+    res.send
 }
 )

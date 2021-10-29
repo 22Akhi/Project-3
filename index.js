@@ -1,162 +1,63 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const morgan = require('morgan');
-const data = require('./data');
-const app = express();
-const PORT = process.env.PORT || 5000;
+const express = require('express')
+const bcrypt = require('bcryptjs')
+const data = require('./data')
+const app = express() // invoke express in order to create an instance
 
-//logger middleware
-app.use(morgan('dev'))
+const PORT = process.env.PORT || 3000
 
+// JSON and form parsing middleware
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-//Routes
-
-//Welcome-
+// ROUTES
+// Welcome
 app.get('/', (req, res) => {
-    res.render("pages/home")
-}) 
-
-//Get all Users
-app.get('/users' , (req, res)=> {
-   
-    //res.send(data.users)
-
-    res.render('pages/users', {
-        users:data.users
-    })
+  res.send("Welcome to our schedule website")
 })
 
-//Get all schedules
-
-app.get('/schedules' , (req, res) => {
-    res.send(data.schedules)
+// Get all users
+app.get('/users', (req, res) => {
+  res.send(data.users)
 })
 
-
-
-
-app.get('/users/add', (req, res) => {
-    res.render('pages/new-user')
+// Get all schedules
+app.get('/schedules', (req, res) => {
+  res.send(data.schedules)
 })
 
-//Get individual user
-
-app.get('/users/:id' , (req, res) =>{
-//TODO: Validate req.params.id
-console.log(req.params.id);
-const user = data.users[req.params.id]
-res.send(user)
-
-
+// Get individual user
+app.get('/users/:id', (req, res) => {
+  const user = data.users[req.params.id]
+  res.send(user)
 })
 
-
-//Get individual schedules
-
-app.get('/schedules/:id' , (req, res) =>{
-//TODO: Validate req.params.id
-console.log(req.params.id);
-const schedule = data.schedules[req.params.id]
-res.send(schedule)
-
-
+//Get user's schedules
+app.get('/users/:id/schedules', (req,res) => {
+  const uschedule = data.schedules.filter(schedule => schedule.user_id == Number(req.params.id))
+  res.send(uschedule)  
 })
 
+// Create new schedules
+app.post('/schedules', (req, res) => {
+  // TODO: Validate data
 
-
-//JSON AND FORM parsing middle of something
-app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-
-//Create New Post
-
-app.post('/posts' ,(req,res) => {
-//TODO:Validate data
-
-
-    //Add post to all  posts
-    data.schedules.push(req.body)
-    res.send(req.body)
+  //Add new schedules to all schedules
+  data.schedules.push(req.body)
+  res.send(req.body)
 })
 
-
-
-
-
-
-
-
-
-//Create New user
-
-app.post('/users', (req, res)=> {
-    const password = req.body.password
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
-    // TODO: Add hash to user object and then push to user array
-
-    data.users.push({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password:hash
-    })
-    res.redirect('/users')
+// Create new user
+app.post('/users', (req, res) => {
+  // Using bcryptjs
+  const password = req.body.password
+  const salt = bcrypt.genSaltSync(10)
+  const hash = bcrypt.hashSync(password, salt)
+  req.body.password = hash
+  // TODO: Add hash to user object and then push to user array
+  data.users.push(req.body)
+  res.send(req.body)
 })
-//CRUD -        Create,    Read,Update,   Delete
-//  HTTP METHODS      post,    get,   put/patch,   delete
-
-
-
-
-//Set view engines
-
-app.set('view engine', 'ejs')
-
-
-//Set static folder
-app.use(express.static('public'))
-
 
 app.listen(PORT, () => {
-    console.log(`Hey there App listening at  http://localhost:${PORT}`)
+  console.log(`App is listening at http://localhost:${PORT}`)
 })
-
-
-
-
-app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-
-
-
-
-
-//Create New User
-
-app.post('/users', (req, res) => {
-res.send(req.body)
-})
-
-
-
-//Post one particular user
-app.get('/users/:id/posts', (req,res) =>{
-  const posts = data.schedules.filter(post => post.user_id === Number(req.params.id))  
-  //TODO:   Validate- if array has data , then send it. Otherwise show error
-  res.send(posts)
-}
-)
-
-
-//Add new post
-
-app.post('/posts', (req, res) => {
-
-
-    data.posts.push(req.body)
-    res.send
-}
-)

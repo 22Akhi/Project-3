@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const data = require('./data')
 const app = express() // invoke express in order to create an instance
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5000
 
 // JSON and form parsing middleware
 app.use(express.json())

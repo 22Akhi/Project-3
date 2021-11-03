@@ -3,7 +3,7 @@
 const pgp = require('pg-promise')()
 
 // Connection string
-const cn = 'postgres://postgres:12345678@localhost:5432/mrcoffee_db'
+const cn = 'postgres://postgres:22@localhost:5432/mrcoffee_db22'
 
 // Create a new database instance
 const db = pgp(cn)

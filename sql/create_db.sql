@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS mrcoffee_db;
+DROP DATABASE IF EXISTS mrcoffee_db22;
 
-CREATE DATABASE mrcoffee_db;
+CREATE DATABASE mrcoffee_db22;
 

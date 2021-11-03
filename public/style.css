@@ -5,6 +5,7 @@ body{
     text-align: center;
     justify-content: center;
     align-items: center;
+    background-color: rgb(204, 235, 236);
 }
 nav{
     margin-top: 20px;
